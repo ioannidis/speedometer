@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.ioannidis.speedometer.models.SpeedViolationModel;
+import eu.ioannidis.speedometer.models.ViolationModel;
 
 public class DatabaseConfig extends SQLiteOpenHelper {
 
@@ -52,7 +52,7 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         Log.d("Database Operations", "Table is created...");
     }
 
-    public void addViolation(SpeedViolationModel s) {
+    public void addViolation(ViolationModel s) {
         ContentValues values = new ContentValues();
         values.put(SpeedViolationContract.SpeedViolationEntry.LONGITUDE, s.getLongitude());
         values.put(SpeedViolationContract.SpeedViolationEntry.LATITUDE, s.getLatitude());
@@ -65,23 +65,22 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         db.close();
     }
 
-    public List<SpeedViolationModel> getViolations() {
-        List<SpeedViolationModel> result = new ArrayList<>();
+    public List<ViolationModel> getViolations() {
+        List<ViolationModel> result = new ArrayList<>();
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(SELECT_ALL, null);
         cursor.moveToFirst();
-        System.out.println("ADASDASDASDASDASDASDASDASd");
         while (!cursor.isAfterLast()) {
-            SpeedViolationModel speedViolationModel = new SpeedViolationModel();
+            ViolationModel violationModel = new ViolationModel();
 
-            speedViolationModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
-            speedViolationModel.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
-            speedViolationModel.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
-            speedViolationModel.setSpeed(cursor.getInt(cursor.getColumnIndex("speed")));
-            speedViolationModel.setTimestamp(Timestamp.valueOf(cursor.getString(cursor.getColumnIndex("timestamp"))));
+            violationModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            violationModel.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+            violationModel.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+            violationModel.setSpeed(cursor.getInt(cursor.getColumnIndex("speed")));
+            violationModel.setTimestamp(Timestamp.valueOf(cursor.getString(cursor.getColumnIndex("timestamp"))));
 
-            result.add(speedViolationModel);
+            result.add(violationModel);
             cursor.moveToNext();
         }
         db.close();

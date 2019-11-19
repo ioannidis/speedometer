@@ -10,14 +10,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,16 +26,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
 import java.util.Locale;
 
 import eu.ioannidis.speedometer.config.DatabaseConfig;
-import eu.ioannidis.speedometer.models.SpeedViolationModel;
+import eu.ioannidis.speedometer.models.ViolationModel;
 
-import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 import static androidx.preference.PreferenceManager.setDefaultValues;
 
-public class MainActivity extends AppCompatActivity implements LocationListener {
+public class MainActivity extends AppCompatActivity implements LocationListener, TextToSpeech.OnInitListener {
 
     TextView speedTextView;
     Button enableButton;
@@ -85,17 +82,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         setContentView(R.layout.activity_main);
 
 //        System.out.println((new Timestamp(System.currentTimeMillis())).toString());
-//        SpeedViolationModel speedViolationModel = new SpeedViolationModel(100.25214, 200.2569, 50, new Timestamp(System.currentTimeMillis()));
+//        ViolationModel speedViolationModel = new ViolationModel(100.25214, 200.2569, 50, new Timestamp(System.currentTimeMillis()));
 //        dbHandler.addViolation(speedViolationModel);
         System.out.println("======== From db =============================");
         dbHandler.getViolations().forEach(System.out::println);
         System.out.println("======== End From db =============================");
 
-        textToSpeech = new TextToSpeech(this, (status) -> {
-            if (status == TextToSpeech.SUCCESS) {
-                textToSpeech.setLanguage(Locale.ENGLISH);
-            }
-        });
+        textToSpeech = new TextToSpeech(this, this);
 
         // Preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -133,6 +126,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
+    public void onInit(int status) {
+        if(status == TextToSpeech.SUCCESS){
+            int result = textToSpeech.setLanguage(Locale.ENGLISH);
+            if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("DEBUG" , "Language Not Supported");
+            }
+        }
+        else{
+            Log.i("DEBUG" , "MISSION FAILED");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (textToSpeech != null){
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 1000) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
@@ -152,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 if (currentSpeed > speedLimit) {
                     textToSpeech.speak("Caution! You have exceeded the speed limit.", TextToSpeech.QUEUE_ADD, null, null);
+                } else {
+                    textToSpeech.stop();
                 }
 
                 if (currentSpeed <= speedLimit && speedViolation) {
@@ -160,9 +177,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
                 if (currentSpeed > speedLimit && !speedViolation) {
                     speedViolation = true;
-                    SpeedViolationModel speedViolationModel = new SpeedViolationModel(location.getLongitude(), location.getLatitude(), SpeedConverter.mPerSecToKmPerHr(currentSpeed), new Timestamp(System.currentTimeMillis()));
-                    dbHandler.addViolation(speedViolationModel);
-                    Toast.makeText(this, speedViolationModel.toString(), Toast.LENGTH_LONG).show();
+                    ViolationModel violationModel = new ViolationModel(location.getLongitude(), location.getLatitude(), SpeedConverter.mPerSecToKmPerHr(currentSpeed), new Timestamp(System.currentTimeMillis()));
+                    dbHandler.addViolation(violationModel);
+                    Toast.makeText(this, violationModel.toString(), Toast.LENGTH_LONG).show();
                 }
 
             }

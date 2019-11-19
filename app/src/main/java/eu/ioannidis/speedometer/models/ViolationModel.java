@@ -2,7 +2,7 @@ package eu.ioannidis.speedometer.models;
 
 import java.sql.Timestamp;
 
-public class SpeedViolationModel {
+public class ViolationModel {
 
     private int id;
     private Double longitude;
@@ -10,9 +10,9 @@ public class SpeedViolationModel {
     private int speed;
     private Timestamp timestamp;
 
-    public SpeedViolationModel() { }
+    public ViolationModel() { }
 
-    public SpeedViolationModel(Double longitude, Double latitude, int speed, Timestamp timestamp) {
+    public ViolationModel(Double longitude, Double latitude, int speed, Timestamp timestamp) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.speed = speed;
@@ -61,7 +61,7 @@ public class SpeedViolationModel {
 
     @Override
     public String toString() {
-        return "SpeedViolationModel{" +
+        return "ViolationModel{" +
                 "id=" + id +
                 ", longitude='" + longitude + '\'' +
                 ", latitude='" + latitude + '\'' +

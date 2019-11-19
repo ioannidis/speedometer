@@ -10,6 +10,7 @@
     <!-- Speed Preferences -->
     <string name="speed_limit_title">Limit</string>
     <string name="title_activity_maps">Map</string>
+    <string name="more_button">more</string>
 
     <!-- Sync Preferences -->
     <!--    <string name="sync_title">Sync email periodically</string>-->
