@@ -11,13 +11,25 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
+
+import eu.ioannidis.speedometer.adapters.MapMarkerInfoviewAdapter;
+import eu.ioannidis.speedometer.config.DatabaseConfig;
+import eu.ioannidis.speedometer.models.ViolationModel;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
+    private List<ViolationModel> items;
+
+    private DatabaseConfig dbHandler = new DatabaseConfig(this, null, null, 1);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_activity_map);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -39,9 +51,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // Set custom marker infoview
+        mMap.setInfoWindowAdapter(new MapMarkerInfoviewAdapter(MapsActivity.this));
+
+        // Get all violations from database
+        items = dbHandler.getViolations();
+
+        // Add markers
+        items.forEach(item -> {
+            LatLng marker = new LatLng(item.getLatitude(), item.getLongitude());
+
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(marker)
+                    .snippet("Date: " + item.getTimestamp() + "\nLongitude: " + item.getLongitude() +  "\nLatitude: " + item.getLatitude() +  "\nSpeed: " + item.getSpeed() + " km/h");
+            mMap.addMarker(markerOptions);
+        });
+        LatLng marker = new LatLng(items.get(0).getLatitude(), items.get(0).getLongitude());
+
+        // Move screen to the latest marker
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, 14));
+
     }
 }

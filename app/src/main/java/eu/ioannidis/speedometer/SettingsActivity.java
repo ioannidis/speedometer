@@ -32,28 +32,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-
-        System.out.println("========= Settings Activity ====================================");
-        settings.getAll().forEach((k,v) -> System.out.println(k + v));
-        System.out.println(settings.getString("speed_limit_value", "aaaa"));
-
-//        SharedPreferences rootPreferences =
-//                PreferenceManager.getDefaultSharedPreferences(this);
-//        int speedLimit = rootPreferences.getInt("speed_limit", 50);
-//        System.out.println("========= Settings Activity ====================================");
-//        System.out.println(speedLimit);
-
-//        SharedPreferences speedometerPreferences = getSharedPreferences("speedometer_preferences", MODE_PRIVATE);
-//
-//        SharedPreferences.Editor editor = speedometerPreferences.edit();
-//        editor.putInt("speed_limit_value", rootPreferences.getInt("speed_limit", 50));
-//        editor.apply();
-
-//        Toast.makeText(this, "The speedo pref is " + speedLimit, Toast.LENGTH_LONG).show();
-
     }
 
 

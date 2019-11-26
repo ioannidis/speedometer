@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import eu.ioannidis.speedometer.adapters.ViolationListAdapter;
 import eu.ioannidis.speedometer.config.DatabaseConfig;
@@ -29,7 +30,12 @@ public class ViolationsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.title_activity_violations);
         setContentView(R.layout.activity_violations);
+
+        // Enable back button on actionbar
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
 
         // Get all violations from database
         items = dbHandler.getViolations();
@@ -44,5 +50,12 @@ public class ViolationsActivity extends AppCompatActivity {
         recyclerView.setAdapter(mAdapter);
         // User linear layout manager
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    // Add functionality to back button
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

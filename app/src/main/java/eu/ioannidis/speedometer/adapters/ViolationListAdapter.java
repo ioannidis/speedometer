@@ -53,14 +53,12 @@ public class ViolationListAdapter extends RecyclerView.Adapter<ViolationListAdap
 
             Context context = view.getContext();
             Intent intent = new Intent(context, ViolationDetailsActivity.class);
-            intent.putExtra("VIOLATION", items.get(position).getId());
+            intent
+                    .putExtra("timestamp", items.get(position).getTimestamp().toString())
+                    .putExtra("longitude", items.get(position).getLongitude())
+                    .putExtra("latitude", items.get(position).getLatitude())
+                    .putExtra("speed", String.valueOf(items.get(position).getSpeed()));
             context.startActivity(intent);
-
-            System.out.println("*****************************************************");
-            System.out.println(items.get(position));
-            System.out.println(items.get(position).getId());
-
-            Toast.makeText(context, items.get(position).getTimestamp().toString(), Toast.LENGTH_SHORT).show();
         });
     }
 

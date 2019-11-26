@@ -15,6 +15,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.Menu;
@@ -25,11 +28,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Locale;
 
 import eu.ioannidis.speedometer.config.DatabaseConfig;
 import eu.ioannidis.speedometer.models.ViolationModel;
+import eu.ioannidis.speedometer.service.SpeechRecognitionService;
 
 import static androidx.preference.PreferenceManager.setDefaultValues;
 
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TextView speedTextView;
     Button enableButton;
     Button disableButton;
+    FloatingActionButton speechRecognitionButton;
     Boolean isEnabled = true;
 
     private boolean speedViolation = false;
@@ -46,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private int speedLimit;
 
     private TextToSpeech textToSpeech;
+
+    private SpeechRecognizer speechRecognizer;
 
     private DatabaseConfig dbHandler = new DatabaseConfig(this, null, null, 1);
 
@@ -63,13 +73,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         Intent intent;
         switch (item.getItemId()) {
             case R.id.settings:
-                Toast.makeText(this, "Here are the settings", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, SettingsActivity.class);
                 this.startActivity(intent);
                 return true;
             case R.id.violations:
-                Toast.makeText(this, "Here are the violations", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, ViolationsActivity.class);
+                this.startActivity(intent);
+                return true;
+            case R.id.map:
+                intent = new Intent(this, MapsActivity.class);
                 this.startActivity(intent);
                 return true;
         }
@@ -81,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        SpeechRecognitionService.createThread();
+        initializeSpeechRecognition();
+
 //        System.out.println((new Timestamp(System.currentTimeMillis())).toString());
 //        ViolationModel speedViolationModel = new ViolationModel(100.25214, 200.2569, 50, new Timestamp(System.currentTimeMillis()));
 //        dbHandler.addViolation(speedViolationModel);
@@ -88,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         dbHandler.getViolations().forEach(System.out::println);
         System.out.println("======== End From db =============================");
 
-        textToSpeech = new TextToSpeech(this, this);
 
         // Preferences
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -117,12 +131,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             Toast.makeText(this, "Speed capture is disabled", Toast.LENGTH_SHORT).show();
         });
 
+        speechRecognitionButton = findViewById(R.id.speech_recognition_fab);
+        speechRecognitionButton.setOnClickListener((View view) -> {
+            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 2000);
+            } else {
+                System.out.println("FAB clicked");
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 
+                speechRecognizer.startListening(intent);
+            }
+        });
+
+        // Check permission for location
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1000);
         } else {
             accessData();
         }
+
+        // Initialize speech recognition
+        initializeSpeechRecognition();
+
+        // Initialize text to speech
+        textToSpeech = new TextToSpeech(this, this);
     }
 
     @Override
@@ -137,6 +171,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             Log.i("DEBUG" , "MISSION FAILED");
         }
     }
+
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        textToSpeech.stop();
+//    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        Reinitialize the speech recognizer and text to speech engines upon resuming from background
+        initializeSpeechRecognition();
+        textToSpeech = new TextToSpeech(this, this);
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -164,6 +213,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (isEnabled) {
                 float currentSpeed = location.getSpeed();
                 speedTextView.setText(String.valueOf(SpeedConverter.mPerSecToKmPerHr(currentSpeed)));
+
+                speedLimit = Integer.valueOf(sharedPreferences.getString("speed_limit_value", "50"));
 
                 if (currentSpeed > speedLimit) {
                     textToSpeech.speak("Caution! You have exceeded the speed limit.", TextToSpeech.QUEUE_ADD, null, null);
@@ -226,6 +277,83 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             disableButton.setBackgroundColor(Color.parseColor("#00796b"));
             disableButton.setTextColor(Color.WHITE);
         }
+    }
+
+    private void initializeSpeechRecognition() {
+        if (SpeechRecognizer.isRecognitionAvailable(this)) {
+            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            speechRecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onReadyForSpeech(Bundle bundle) {
+
+                }
+
+                @Override
+                public void onBeginningOfSpeech() {
+
+                }
+
+                @Override
+                public void onRmsChanged(float v) {
+
+                }
+
+                @Override
+                public void onBufferReceived(byte[] bytes) {
+
+                }
+
+                @Override
+                public void onEndOfSpeech() {
+
+                }
+
+                @Override
+                public void onError(int i) {
+
+                }
+
+                @Override
+                public void onResults(Bundle bundle) {
+                    List<String> results = bundle.getStringArrayList(
+                            SpeechRecognizer.RESULTS_RECOGNITION
+                    );
+                    processSpeechResult(results.get(0));
+                }
+
+                @Override
+                public void onPartialResults(Bundle bundle) {
+
+                }
+
+                @Override
+                public void onEvent(int i, Bundle bundle) {
+
+                }
+            });
+        }
+    }
+
+    // Process the command gathered from microphone
+    private void processSpeechResult(String command) {
+        command = command.toLowerCase();
+
+        if (command.contains("speed") || command.contains("speedometer")) {
+
+            if (command.contains("start")) {
+                enableButton.performClick();
+            }else if (command.contains("stop")) {
+                disableButton.performClick();
+            } else {
+                Toast.makeText(this, "Available commands are 'start' or 'stop'", Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+            Toast.makeText(this, "Initialize speech recognition say 'speed' or 'speedometer' following by your command!", Toast.LENGTH_LONG).show();
+            textToSpeech.speak("Starting with 'speed' or speedometer following by your command!", TextToSpeech.QUEUE_ADD, null, null);
+        }
+
+
     }
 
 }

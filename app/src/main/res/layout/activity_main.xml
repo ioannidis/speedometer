@@ -59,9 +59,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
         android:layout_marginTop="36dp"
-        android:text="Π16036 - Ιωαννίδης Παναγιώτης"
-        android:textSize="18sp"
+        android:text="P16036 - Ioannidis Panagiotis"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/speech_recognition_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="608dp"
+        android:layout_marginEnd="28dp"
+        app:fabCustomSize="75dp"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_mic_black_36dp"
+        app:maxImageSize="36dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
