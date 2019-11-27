@@ -29,7 +29,14 @@ public class DatabaseConfig extends SQLiteOpenHelper {
             + SpeedViolationContract.SpeedViolationEntry.TIMESTAMP + " text);";
 
     private static final String DROP_TABLE = "drop table if exists " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME;
-    private static final String SELECT_ALL = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME;
+
+    private static final String SELECT_ALL = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME + " order by timestamp desc";
+
+    private static final String SELECT_ALL_BY_TIMESTAMP = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME +
+            " where timestamp between '2019-11-20' and '2019-11-25' order by timestamp desc";
+
+    private static final String SELECT_ALL_BY_WEEK = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME +
+            " where timestamp > (select datetime('now', '-7 day')) order by timestamp desc";
 
 
     public DatabaseConfig(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
@@ -70,6 +77,50 @@ public class DatabaseConfig extends SQLiteOpenHelper {
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor cursor = db.rawQuery(SELECT_ALL, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            ViolationModel violationModel = new ViolationModel();
+
+            violationModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            violationModel.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+            violationModel.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+            violationModel.setSpeed(cursor.getInt(cursor.getColumnIndex("speed")));
+            violationModel.setTimestamp(Timestamp.valueOf(cursor.getString(cursor.getColumnIndex("timestamp"))));
+
+            result.add(violationModel);
+            cursor.moveToNext();
+        }
+        db.close();
+        return result;
+    }
+
+    public List<ViolationModel> getViolationsByWeek() {
+        List<ViolationModel> result = new ArrayList<>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(SELECT_ALL_BY_WEEK, null);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            ViolationModel violationModel = new ViolationModel();
+
+            violationModel.setId(cursor.getInt(cursor.getColumnIndex("id")));
+            violationModel.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
+            violationModel.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+            violationModel.setSpeed(cursor.getInt(cursor.getColumnIndex("speed")));
+            violationModel.setTimestamp(Timestamp.valueOf(cursor.getString(cursor.getColumnIndex("timestamp"))));
+
+            result.add(violationModel);
+            cursor.moveToNext();
+        }
+        db.close();
+        return result;
+    }
+
+    public List<ViolationModel> getViolationsByTimestamp() {
+        List<ViolationModel> result = new ArrayList<>();
+
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor cursor = db.rawQuery(SELECT_ALL_BY_TIMESTAMP, null);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             ViolationModel violationModel = new ViolationModel();

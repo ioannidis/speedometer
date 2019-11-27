@@ -58,4 +58,10 @@ public class ViolationsActivity extends AppCompatActivity {
         onBackPressed();
         return true;
     }
+
+    private void getAllViolations() {}
+
+    private void getAllViolationsByWeek() {}
+
+    private void getAllViolationsByTimeStamp() {}
 }
