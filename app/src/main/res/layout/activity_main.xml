@@ -6,6 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/violations_button"
+        android:layout_width="190dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:foregroundTint="#1AFFFEFE"
+        android:text="Violations"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/map_button"
+        android:layout_width="190dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:foregroundTint="#1AFFFEFE"
+        android:text="Map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/speedTextView"
         android:layout_width="wrap_content"
@@ -33,34 +55,34 @@
 
     <Button
         android:id="@+id/enableButton"
-        android:layout_width="167dp"
+        android:layout_width="135dp"
         android:layout_height="57dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginBottom="208dp"
         android:foregroundTint="#1AFFFEFE"
         android:text="Enable"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/disableButton"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/disableButton"
-        android:layout_width="167dp"
+        android:layout_width="135dp"
         android:layout_height="57dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="16dp"
-        android:text="Disabled"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="208dp"
+        android:text="Disable"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/enableButton" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="72dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="160dp"
         android:text="P16036 - Ioannidis Panagiotis"
         android:textSize="20sp"
+        android:textColor="#C7C6C6"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,9 +90,9 @@
         android:id="@+id/speech_recognition_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_mic_black_24dp" />

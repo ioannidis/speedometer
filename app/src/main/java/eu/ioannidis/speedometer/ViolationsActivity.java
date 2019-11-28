@@ -79,7 +79,7 @@ public class ViolationsActivity extends AppCompatActivity {
         // Get all violations from database
         items = dbHandler.getViolations();
 
-        recyclerView = (RecyclerView) findViewById(R.id.violation_list);
+        recyclerView = findViewById(R.id.violation_list);
         recyclerView.setHasFixedSize(true);
 
         // Recycle view adapter

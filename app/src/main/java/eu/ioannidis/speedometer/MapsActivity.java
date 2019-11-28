@@ -1,5 +1,6 @@
 package eu.ioannidis.speedometer;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
@@ -12,12 +13,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.Objects;
 
 import eu.ioannidis.speedometer.adapters.MapMarkerInfoviewAdapter;
 import eu.ioannidis.speedometer.config.DatabaseConfig;
 import eu.ioannidis.speedometer.models.ViolationModel;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
@@ -35,6 +37,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Enable back button on actionbar
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -71,5 +76,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Move screen to the latest marker
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, 14));
 
+    }
+
+    // Add functionality to back button
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

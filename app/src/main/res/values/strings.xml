@@ -7,7 +7,9 @@
     <!-- Activity Titles -->
     <string name="title_activity_violation_details">Violation Details</string>
     <string name="title_activity_violations">Violations</string>
-    <string name="title_activity_map">Violations Map</string>
+    <string name="title_activity_map">Map</string>
+    <string name="title_activity_about">About</string>
+    <string name="title_activity_help">Help</string>
 
     <!-- Preference Titles -->
     <string name="speed_header">Speed</string>
@@ -22,6 +24,10 @@
     <string name="violation_longitude_title">Longitude</string>
     <string name="violation_latitude_title">Latitude</string>
     <string name="violation_speed_title">Speed</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="tab_text_1">Main</string>
+    <string name="tab_text_2">Violations</string>
+    <string name="tab_text_3">Map</string>
 
 
 </resources>

@@ -95,6 +95,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="0"
+        android:textColor="#EE0A0A"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="@+id/violation_details_speed_label"
         app:layout_constraintTop_toBottomOf="@+id/violation_details_speed_label" />

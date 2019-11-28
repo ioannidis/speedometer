@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ public class ViolationListAdapter extends RecyclerView.Adapter<ViolationListAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
+        holder.speedTextView.setText(String.valueOf(items.get(position).getSpeed()));
         holder.timestampTextView.setText(items.get(position).getTimestamp().toString());
 
         holder.moreButton.setOnClickListener((View view) -> {
@@ -70,14 +72,16 @@ public class ViolationListAdapter extends RecyclerView.Adapter<ViolationListAdap
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        RelativeLayout relativeLayout;
+        LinearLayout LinearLayout;
         TextView timestampTextView;
+        TextView speedTextView;
         Button moreButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            relativeLayout = itemView.findViewById(R.id.violation_list_parent);
+            LinearLayout = itemView.findViewById(R.id.violation_list_parent);
             timestampTextView = itemView.findViewById(R.id.violation_timestamp);
+            speedTextView = itemView.findViewById(R.id.violation_speed);
             moreButton = itemView.findViewById(R.id.violation_details);
         }
     }
