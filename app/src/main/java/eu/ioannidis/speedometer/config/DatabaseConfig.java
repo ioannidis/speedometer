@@ -32,9 +32,6 @@ public class DatabaseConfig extends SQLiteOpenHelper {
 
     private static final String SELECT_ALL = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME + " order by timestamp desc";
 
-    private static final String SELECT_ALL_BY_TIMESTAMP = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME +
-            " where timestamp between '2019-11-20' and '2019-11-25' order by timestamp desc";
-
     private static final String SELECT_ALL_BY_WEEK = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME +
             " where timestamp > (select datetime('now', '-7 day')) order by timestamp desc";
 
@@ -59,6 +56,7 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         Log.d("Database Operations", "Table is created...");
     }
 
+    // Add new record
     public void addViolation(ViolationModel s) {
         ContentValues values = new ContentValues();
         values.put(SpeedViolationContract.SpeedViolationEntry.LONGITUDE, s.getLongitude());
@@ -72,6 +70,7 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Get all records
     public List<ViolationModel> getViolations() {
         List<ViolationModel> result = new ArrayList<>();
 
@@ -94,6 +93,7 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         return result;
     }
 
+    // Get all records from last week
     public List<ViolationModel> getViolationsByWeek() {
         List<ViolationModel> result = new ArrayList<>();
 
@@ -116,7 +116,11 @@ public class DatabaseConfig extends SQLiteOpenHelper {
         return result;
     }
 
-    public List<ViolationModel> getViolationsByTimestamp() {
+    // Get all records based on timestamp
+    public List<ViolationModel> getViolationsByTimestamp(String from, String to) {
+        String SELECT_ALL_BY_TIMESTAMP = "select * from " + SpeedViolationContract.SpeedViolationEntry.TABLE_NAME +
+                " where timestamp between '" + from + "' and '" + to + "' order by timestamp desc";
+
         List<ViolationModel> result = new ArrayList<>();
 
         SQLiteDatabase db = getWritableDatabase();
