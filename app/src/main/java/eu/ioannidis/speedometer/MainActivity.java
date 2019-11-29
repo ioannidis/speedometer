@@ -40,6 +40,7 @@ import eu.ioannidis.speedometer.models.ViolationModel;
 public class MainActivity extends AppCompatActivity implements LocationListener, TextToSpeech.OnInitListener {
 
     Intent intent;
+    Intent sRecIntent;
 
     TextView speedTextView;
     Button violationsButton;
@@ -150,12 +151,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 2000);
             } else {
-                Toast.makeText(this, "Speak now!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-
-                speechRecognizer.startListening(intent);
+                Toast.makeText(this, "Please speak now!", Toast.LENGTH_LONG).show();
+                speechRecognizer.startListening(sRecIntent);
             }
         });
 
@@ -293,6 +290,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void initializeSpeechRecognition() {
         if (SpeechRecognizer.isRecognitionAvailable(this)) {
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+            sRecIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            sRecIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            sRecIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+            sRecIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                    this.getPackageName());
+
+
             speechRecognizer.setRecognitionListener(new RecognitionListener() {
                 @Override
                 public void onReadyForSpeech(Bundle bundle) {
