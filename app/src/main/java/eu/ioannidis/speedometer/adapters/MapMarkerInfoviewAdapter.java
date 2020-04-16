@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import eu.ioannidis.speedometer.R;
 
+// Marker bubble configuration
 public class MapMarkerInfoviewAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View mView;

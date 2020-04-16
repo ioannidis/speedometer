@@ -1,6 +1,7 @@
 package eu.ioannidis.speedometer;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -11,11 +12,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     Intent intent;
     Intent sRecIntent;
+
+    ActionBar actionBar;
 
     TextView speedTextView;
     Button violationsButton;
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Check option selection from the menu and start the corresponding activity
         switch (item.getItemId()) {
             case R.id.settings:
                 intent = new Intent(this, SettingsActivity.class);
@@ -93,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        actionBar = getSupportActionBar();
 
         speedViolation = false;
 
@@ -152,7 +157,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 2000);
             } else {
                 Toast.makeText(this, "Please speak now!", Toast.LENGTH_LONG).show();
-                speechRecognizer.startListening(sRecIntent);
+                startActivityForResult(sRecIntent,1001);
+
             }
         });
 
@@ -165,7 +171,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
+
+    @Override
     public void onInit(int status) {
+        // Setup speech to text
         if(status == TextToSpeech.SUCCESS){
             int result = textToSpeech.setLanguage(Locale.ENGLISH);
             if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -180,15 +202,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onPause() {
         super.onPause();
-//        textToSpeech.stop();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        Reinitialize the speech recognizer and text to speech engines upon resuming from background
+        // Reinitialize the speech recognizer and text to speech engines upon resuming from background
         initializeSpeechRecognition();
-//        textToSpeech = new TextToSpeech(this, this);
     }
 
 
@@ -217,22 +237,33 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (location != null) {
             if (isEnabled) {
                 float currentSpeed = location.getSpeed();
-                speedTextView.setText(String.valueOf(SpeedConverter.mPerSecToKmPerHr(currentSpeed)));
+                currentSpeed = SpeedConverter.mPerSecToKmPerHr(currentSpeed);
+                speedTextView.setText(String.valueOf(currentSpeed));
 
                 speedLimit = Integer.valueOf(sharedPreferences.getString("speed_limit_value", "50"));
 
+                // there is no violation if current speed is lower or equal to speed limit
                 if (currentSpeed <= speedLimit) {
                     speedViolation = false;
+                    actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#008577")));
                 }
 
+                // if there is a violation, create a new database record and inform the user
                 if (currentSpeed > speedLimit) {
                     speedTextView.setTextColor(Color.RED);
+                    actionBar.setBackgroundDrawable(new ColorDrawable(Color.RED));
+
                     textToSpeech.speak("Caution! You have exceeded the speed limit.", TextToSpeech.QUEUE_ADD, null, null);
 
                     if (!speedViolation) {
                         speedViolation = true;
+
+                        // Create db record
                         ViolationModel violationModel = new ViolationModel(location.getLongitude(), location.getLatitude(), SpeedConverter.mPerSecToKmPerHr(currentSpeed), new Timestamp(System.currentTimeMillis()));
+
+                        // Save the db record
                         dbHandler.addViolation(violationModel);
+
                         Toast.makeText(this, violationModel.toString(), Toast.LENGTH_LONG).show();
                     }
 
@@ -247,22 +278,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
-
-
+    // Access location manager
     @SuppressLint("MissingPermission")
     private void accessData() {
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -287,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
+    // Initialize speech recognition intent
     private void initializeSpeechRecognition() {
         if (SpeechRecognizer.isRecognitionAvailable(this)) {
             speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
@@ -295,63 +312,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             sRecIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
             sRecIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                     this.getPackageName());
-
-
-            speechRecognizer.setRecognitionListener(new RecognitionListener() {
-                @Override
-                public void onReadyForSpeech(Bundle bundle) {
-
-                }
-
-                @Override
-                public void onBeginningOfSpeech() {
-
-                }
-
-                @Override
-                public void onRmsChanged(float v) {
-
-                }
-
-                @Override
-                public void onBufferReceived(byte[] bytes) {
-
-                }
-
-                @Override
-                public void onEndOfSpeech() {
-
-                }
-
-                @Override
-                public void onError(int i) {
-
-                }
-
-                @Override
-                public void onResults(Bundle bundle) {
-                    List<String> results = bundle.getStringArrayList(
-                            SpeechRecognizer.RESULTS_RECOGNITION
-                    );
-                    processSpeechResult(results.get(0));
-                }
-
-                @Override
-                public void onPartialResults(Bundle bundle) {
-
-                }
-
-                @Override
-                public void onEvent(int i, Bundle bundle) {
-
-                }
-            });
         }
     }
 
     // Process the command gathered from microphone
     private void processSpeechResult(String command) {
         command = command.toLowerCase();
+        System.out.println(command);
 
         if (command.contains("speed") || command.contains("speedometer")) {
 
@@ -373,6 +340,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
 
+    }
+
+    // Check activity results for speech recognition request code and then call the speech result
+    // call processSpeechResult to process the results
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                            RecognizerIntent.EXTRA_RESULTS
+                    );
+            System.out.println(results);
+            processSpeechResult(results.get(0));
+        }
     }
 
 }

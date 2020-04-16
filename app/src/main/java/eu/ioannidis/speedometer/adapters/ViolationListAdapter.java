@@ -8,16 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import eu.ioannidis.speedometer.MainActivity;
 import eu.ioannidis.speedometer.R;
 import eu.ioannidis.speedometer.ViolationDetailsActivity;
 import eu.ioannidis.speedometer.models.ViolationModel;
@@ -47,9 +44,11 @@ public class ViolationListAdapter extends RecyclerView.Adapter<ViolationListAdap
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
+        // Update speed and timestamp text view values
         holder.speedTextView.setText(String.valueOf(items.get(position).getSpeed()));
         holder.timestampTextView.setText(items.get(position).getTimestamp().toString());
 
+        // On click "more" button start violation detail activity
         holder.moreButton.setOnClickListener((View view) -> {
             Log.d(TAG, "Violation item button: click.");
 

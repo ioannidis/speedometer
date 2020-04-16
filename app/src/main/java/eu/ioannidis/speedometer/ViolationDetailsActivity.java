@@ -19,8 +19,6 @@ import java.util.Objects;
 
 public class ViolationDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    MapView mMapView;
-    GoogleMap mMap;
     Intent intent;
 
     TextView timestampTextView;
@@ -45,19 +43,19 @@ public class ViolationDetailsActivity extends AppCompatActivity implements OnMap
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Set timestamp textview field
+        // Set timestamp textView field
         timestampTextView = findViewById(R.id.violation_details_timestamp);
         timestampTextView.setText(intent.getStringExtra("timestamp"));
 
-        // Set longitude textview field
+        // Set longitude textView field
         longitudeTextView = findViewById(R.id.violation_details_long);
         longitudeTextView.setText(String.valueOf(intent.getDoubleExtra("longitude", 0)));
 
-        // Set latitude textview field
+        // Set latitude textView field
         latitudeTextView = findViewById(R.id.violation_details_lat);
         latitudeTextView.setText(String.valueOf(intent.getDoubleExtra("latitude", 0)));
 
-        // Set speed textview field
+        // Set speed textView field
         speedTextView = findViewById(R.id.violation_details_speed);
         speedTextView.setText(intent.getStringExtra("speed") + " km/h");
 
@@ -65,8 +63,10 @@ public class ViolationDetailsActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onMapReady(GoogleMap map) {
+        // Create marker
         LatLng marker = new LatLng(intent.getDoubleExtra("latitude", 0), intent.getDoubleExtra("longitude", 0));
 
+        // Add marker on map
         map
                 .addMarker(new MarkerOptions().position(marker));
 

@@ -1,23 +1,13 @@
 package eu.ioannidis.speedometer;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
-import eu.ioannidis.speedometer.config.SharedPreferencesConfig;
 
 public class SettingsActivity extends AppCompatActivity {
-
-    private SharedPreferencesConfig sharedPreferencesConfig;
-
-    private EditTextPreference speedTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +18,8 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsFragment())
                 .commit();
+
+        // Create action bar
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

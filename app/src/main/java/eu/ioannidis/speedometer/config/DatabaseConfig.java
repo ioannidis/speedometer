@@ -15,6 +15,7 @@ import java.util.List;
 
 import eu.ioannidis.speedometer.models.ViolationModel;
 
+// Database configuration
 public class DatabaseConfig extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "speedometer_db";
@@ -44,6 +45,7 @@ public class DatabaseConfig extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        // Create table
         sqLiteDatabase.execSQL(CREATE_TABLE);
         Log.d("Database Operations", "Table is created...");
     }

@@ -71,10 +71,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .snippet("Date: " + item.getTimestamp() + "\nLongitude: " + item.getLongitude() +  "\nLatitude: " + item.getLatitude() +  "\nSpeed: " + item.getSpeed() + " km/h");
             mMap.addMarker(markerOptions);
         });
-        LatLng marker = new LatLng(items.get(0).getLatitude(), items.get(0).getLongitude());
 
-        // Move screen to the latest marker
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, 14));
+        if (items != null) {
+            LatLng marker = new LatLng(items.get(0).getLatitude(), items.get(0).getLongitude());
+
+            // Move screen to the latest marker
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, 14));
+        }
 
     }
 

@@ -1,7 +1,5 @@
 package eu.ioannidis.speedometer.config;
 
-import java.sql.Timestamp;
-
 public class SpeedViolationContract {
 
     private SpeedViolationContract() { }
